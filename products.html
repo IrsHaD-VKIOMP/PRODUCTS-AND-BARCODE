@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products - Products And Barcode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="scene-3d" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-floor"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="brand-bar">
+      <div class="brand">Products <span>&</span> Barcode</div>
+      <div class="top-actions">
+        <a href="suggest.html" class="btn-secondary">Suggest Product</a>
+        <a href="admin.html" class="btn-primary">Admin / Suggest</a>
+      </div>
+    </div>
+
+    <div class="nav-wrap">
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html" class="active">Products</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="about.html">About</a>
+        <a href="admin.html">Admin / Suggest</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="products-hero reveal">
+      <div>
+        <span class="hero-badge">Curated Barcode Catalog</span>
+        <h1>Explore electronics, supermarket items, fresh food, drinks, beauty, and more</h1>
+        <p>
+          Discover a richer shopping catalog with grouped product collections, barcode-based browsing, image previews, and direct buying links.
+        </p>
+      </div>
+
+      <div class="catalog-summary">
+        <div class="summary-card">
+          <strong id="productCount">0</strong>
+          <span>Products</span>
+        </div>
+        <div class="summary-card">
+          <strong id="barcodeCount">0</strong>
+          <span>Barcodes</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="products-toolbar reveal-delay">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by name, barcode, or category" />
+      </div>
+    </section>
+
+    <section class="category-nav reveal">
+      <button class="category-pill active" data-category="All" type="button">All</button>
+      <button class="category-pill" data-category="Electronics" type="button">Electronics</button>
+      <button class="category-pill" data-category="Supermarket" type="button">Supermarket</button>
+      <button class="category-pill" data-category="Fresh Food" type="button">Fresh Food</button>
+      <button class="category-pill" data-category="Drinks" type="button">Drinks</button>
+      <button class="category-pill" data-category="Beauty" type="button">Beauty</button>
+      <button class="category-pill" data-category="Home Essentials" type="button">Home Essentials</button>
+    </section>
+
+    <section id="catalogSections" class="catalog-sections reveal">
+      <div class="empty-catalog">Loading products...</div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-box">&copy; 2026 ProductsAndBarcode. All rights reserved.</div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDz9DxN0mLSpn_6A-opMeIEAEG4cIDk8OQ",
+      authDomain: "productsandbarcode.firebaseapp.com",
+      projectId: "productsandbarcode",
+      storageBucket: "productsandbarcode.firebasestorage.app",
+      messagingSenderId: "809301561294",
+      appId: "1:809301561294:web:d61d4820d9961f84cba59f",
+      measurementId: "G-MG7V865BE6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const exampleProducts = [
+      {
+        name: "Apple AirPods Pro",
+        image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/MQD83?wid=572&hei=572&fmt=jpeg&qlt=95&.v=1660803972361",
+        barcode: "111000111001",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Electronics"
+      },
+      {
+        name: "Logitech Wireless Mouse",
+        image: "https://resource.logitech.com/w_692,c_limit,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/m185/gallery/m185-grey-top-view.png?v=1",
+        barcode: "111000111002",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Electronics"
+      },
+      {
+        name: "JBL Bluetooth Speaker",
+        image: "https://www.pngmart.com/files/22/JBL-Speaker-PNG-Isolated-File.png",
+        barcode: "111000111003",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Electronics"
+      },
+      {
+        name: "Oreo Biscuit",
+        image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Oreo-Two-Cookies.png",
+        barcode: "222000222001",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Supermarket"
+      },
+      {
+        name: "Nutella Hazelnut Spread",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Nutella.jpg/640px-Nutella.jpg",
+        barcode: "222000222002",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Supermarket"
+      },
+      {
+        name: "Pringles Chips",
+        image: "https://m.media-amazon.com/images/I/71VZ8p8EneL.jpg",
+        barcode: "222000222003",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Supermarket"
+      },
+      {
+        name: "Fresh Milk",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Milk_glass.jpg/640px-Milk_glass.jpg",
+        barcode: "333000333001",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Fresh Food"
+      },
+      {
+        name: "Red Apples",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg",
+        barcode: "333000333002",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Fresh Food"
+      },
+      {
+        name: "Bananas",
+        image: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Banana-Single.jpg",
+        barcode: "333000333003",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Fresh Food"
+      },
+      {
+        name: "Coca Cola",
+        image: "https://upload.wikimedia.org/wikipedia/commons/3/36/Coca-Cola_can_2015.png",
+        barcode: "444000444001",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Drinks"
+      },
+      {
+        name: "Pepsi",
+        image: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Pepsi_can_2023.png",
+        barcode: "444000444002",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Drinks"
+      },
+      {
+        name: "Orange Juice",
+        image: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Orange_juice_1.jpg",
+        barcode: "444000444003",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Drinks"
+      },
+      {
+        name: "Nivea Body Lotion",
+        image: "https://m.media-amazon.com/images/I/61zW6V3xX5L.jpg",
+        barcode: "555000555001",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Beauty"
+      },
+      {
+        name: "Dove Soap",
+        image: "https://m.media-amazon.com/images/I/71b+S7LSdJL.jpg",
+        barcode: "555000555002",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Beauty"
+      },
+      {
+        name: "L'Oreal Shampoo",
+        image: "https://m.media-amazon.com/images/I/61j8ikf2l5L.jpg",
+        barcode: "555000555003",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Beauty"
+      },
+      {
+        name: "Dishwashing Liquid",
+        image: "https://m.media-amazon.com/images/I/61W7c8Qqh-L.jpg",
+        barcode: "666000666001",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Home Essentials"
+      },
+      {
+        name: "Kitchen Towels",
+        image: "https://m.media-amazon.com/images/I/71N+W4V9hXL.jpg",
+        barcode: "666000666002",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Home Essentials"
+      },
+      {
+        name: "Air Freshener",
+        image: "https://m.media-amazon.com/images/I/61k5Vj0vD1L.jpg",
+        barcode: "666000666003",
+        link: "https://amazon.com",
+        views: 0,
+        category: "Home Essentials"
+      }
+    ];
+
+    const catalogSections = document.getElementById("catalogSections");
+    const searchInput = document.getElementById("searchInput");
+    const productCount = document.getElementById("productCount");
+    const barcodeCount = document.getElementById("barcodeCount");
+    const categoryButtons = document.querySelectorAll(".category-pill");
+
+    let firestoreProducts = [];
+    let selectedCategory = "All";
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text || "";
+      return div.innerHTML;
+    }
+
+    function getMergedProducts() {
+      const existingKeys = new Set(
+        firestoreProducts.map(function(product) {
+          return (product.name || "").toLowerCase() + "|" + (product.barcode || "").toLowerCase();
+        })
+      );
+
+      const extras = exampleProducts.filter(function(product) {
+        const key = (product.name || "").toLowerCase() + "|" + (product.barcode || "").toLowerCase();
+        return !existingKeys.has(key);
+      });
+
+      return firestoreProducts.concat(extras);
+    }
+
+    function groupProducts(products) {
+      const grouped = {};
+      products.forEach(function(product) {
+        const category = product.category || "Other";
+        if (!grouped[category]) grouped[category] = [];
+        grouped[category].push(product);
+      });
+      return grouped;
+    }
+
+    function renderCatalog(products) {
+      productCount.textContent = products.length;
+      barcodeCount.textContent = products.length;
+
+      if (!products.length) {
+        catalogSections.innerHTML = '<div class="empty-catalog">No products found.</div>';
+        return;
+      }
+
+      const grouped = groupProducts(products);
+      const categoryOrder = [
+        "Electronics",
+        "Supermarket",
+        "Fresh Food",
+        "Drinks",
+        "Beauty",
+        "Home Essentials",
+        "Other"
+      ];
+
+      catalogSections.innerHTML = categoryOrder
+        .filter(function(category) {
+          return grouped[category] && grouped[category].length;
+        })
+        .map(function(category) {
+          return `
+            <section class="catalog-block">
+              <div class="catalog-block-head">
+                <h2>${escapeHtml(category)}</h2>
+                <span>${grouped[category].length} items</span>
+              </div>
+              <div class="live-products-grid">
+                ${grouped[category].map(function(product) {
+                  return `
+                    <article class="live-product-card">
+                      <div class="live-product-image">
+                        <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" />
+                      </div>
+                      <div class="live-product-body">
+                        <span class="tag">${escapeHtml(product.category || "Product")}</span>
+                        <h3>${escapeHtml(product.name)}</h3>
+                        <p><strong>Barcode:</strong> ${escapeHtml(product.barcode)}</p>
+                        <p><strong>Views:</strong> ${Number(product.views || 0)}</p>
+                        <div class="live-product-actions">
+                          ${product.id
+                            ? `<button class="btn-primary buy-btn" data-id="${product.id}" data-link="${escapeHtml(product.link)}" type="button">Buy Now</button>`
+                            : `<a href="${escapeHtml(product.link)}" class="btn-primary" target="_blank" rel="noopener noreferrer">Buy Now</a>`
+                          }
+                        </div>
+                      </div>
+                    </article>
+                  `;
+                }).join("")}
+              </div>
+            </section>
+          `;
+        }).join("");
+
+      attachBuyEvents();
+    }
+
+    function attachBuyEvents() {
+      document.querySelectorAll(".buy-btn").forEach(function(button) {
+        button.addEventListener("click", async function() {
+          const productId = button.getAttribute("data-id");
+          const productLink = button.getAttribute("data-link");
+
+          button.disabled = true;
+          button.textContent = "Opening...";
+
+          try {
+            const productRef = db.collection("products").doc(productId);
+            await db.runTransaction(async function(transaction) {
+              const doc = await transaction.get(productRef);
+              if (!doc.exists) return;
+              const currentViews = Number(doc.data().views || 0);
+              transaction.update(productRef, { views: currentViews + 1 });
+            });
+          } catch (error) {
+            console.error(error);
+          }
+
+          window.open(productLink, "_blank", "noopener,noreferrer");
+          button.disabled = false;
+          button.textContent = "Buy Now";
+        });
+      });
+    }
+
+    function applyFilters() {
+      const query = searchInput.value.trim().toLowerCase();
+      let products = getMergedProducts();
+
+      if (selectedCategory !== "All") {
+        products = products.filter(function(product) {
+          return (product.category || "").toLowerCase() === selectedCategory.toLowerCase();
+        });
+      }
+
+      if (query) {
+        products = products.filter(function(product) {
+          const name = (product.name || "").toLowerCase();
+          const barcode = (product.barcode || "").toLowerCase();
+          const category = (product.category || "").toLowerCase();
+          return name.includes(query) || barcode.includes(query) || category.includes(query);
+        });
+      }
+
+      renderCatalog(products);
+    }
+
+    categoryButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        categoryButtons.forEach(function(btn) {
+          btn.classList.remove("active");
+        });
+        button.classList.add("active");
+        selectedCategory = button.getAttribute("data-category");
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener("input", applyFilters);
+
+    db.collection("products").onSnapshot(function(snapshot) {
+      firestoreProducts = snapshot.docs.map(function(doc) {
+        return { id: doc.id, ...doc.data() };
+      });
+      applyFilters();
+    }, function(error) {
+      console.error(error);
+      applyFilters();
+    });
+
+    const revealItems = document.querySelectorAll(".reveal, .reveal-delay");
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.18 });
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+  </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Products And Barcode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-page">
+  <div class="scene-3d" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-floor"></div>
+</div>
+  <div class="simple-auth-card">
+    <h1>Admin Login</h1>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" type="button">Login</button>
+      <button class="auth-tab" data-tab="signup" type="button">Create Account</button>
+      <button class="auth-tab" data-tab="reset" type="button">Forgot Password</button>
+    </div>
+
+    <div id="loginPanel" class="auth-panel active">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter email" />
+      </div>
+      <div class="field" style="margin-top: 14px;">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" />
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" id="loginBtn" type="button">Login</button>
+      </div>
+    </div>
+
+    <div id="signupPanel" class="auth-panel">
+      <div class="field">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="Enter email" />
+      </div>
+      <div class="field" style="margin-top: 14px;">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" placeholder="Create password" />
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" id="signupBtn" type="button">Create Account</button>
+      </div>
+    </div>
+
+    <div id="resetPanel" class="auth-panel">
+      <div class="field">
+        <label for="resetEmail">Email</label>
+        <input type="email" id="resetEmail" placeholder="Enter email" />
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" id="resetBtn" type="button">Send Reset Link</button>
+      </div>
+    </div>
+
+    <div id="authMessage" class="auth-message"></div>
+
+    <div class="form-actions" style="margin-top: 16px;">
+      <a href="admin.html" class="btn-secondary">Back</a>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDz9DxN0mLSpn_6A-opMeIEAEG4cIDk8OQ",
+      authDomain: "productsandbarcode.firebaseapp.com",
+      projectId: "productsandbarcode",
+      storageBucket: "productsandbarcode.firebasestorage.app",
+      messagingSenderId: "809301561294",
+      appId: "1:809301561294:web:d61d4820d9961f84cba59f",
+      measurementId: "G-MG7V865BE6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const tabs = document.querySelectorAll(".auth-tab");
+    const messageBox = document.getElementById("authMessage");
+    const panels = {
+      login: document.getElementById("loginPanel"),
+      signup: document.getElementById("signupPanel"),
+      reset: document.getElementById("resetPanel")
+    };
+
+    function setMessage(text, type) {
+      messageBox.textContent = text;
+      messageBox.className = "auth-message" + (type ? " " + type : "");
+    }
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        tabs.forEach(function(item) {
+          item.classList.remove("active");
+        });
+
+        Object.keys(panels).forEach(function(key) {
+          panels[key].classList.remove("active");
+        });
+
+        tab.classList.add("active");
+        panels[tab.dataset.tab].classList.add("active");
+        setMessage("", "");
+      });
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async function() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (!email || !password) {
+        setMessage("Enter email and password.", "error");
+        return;
+      }
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        setMessage(error.message, "error");
+      }
+    });
+
+    document.getElementById("signupBtn").addEventListener("click", async function() {
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value.trim();
+
+      if (!email || !password) {
+        setMessage("Enter email and password.", "error");
+        return;
+      }
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        setMessage(error.message, "error");
+      }
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", async function() {
+      const email = document.getElementById("resetEmail").value.trim();
+
+      if (!email) {
+        setMessage("Enter your email.", "error");
+        return;
+      }
+
+      try {
+        await auth.sendPasswordResetEmail(email);
+        setMessage("Reset email sent.", "success");
+      } catch (error) {
+        setMessage(error.message, "error");
+      }
+    });
+
+    auth.onAuthStateChanged(function(user) {
+      if (user) {
+        window.location.href = "dashboard.html";
+      }
+    });
+  </script>
+</body>
+</html>

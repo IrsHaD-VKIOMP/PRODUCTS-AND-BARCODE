@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Products And Barcode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="admin-page">
+  <div class="scene-3d" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-floor"></div>
+  </div>
+
+  <div class="admin-wrapper">
+    <div class="admin-title">
+      <h1>Admin Dashboard</h1>
+      <p>Approve suggestions and manage categorized products</p>
+    </div>
+
+    <div class="section-card">
+      <div class="dashboard-topbar">
+        <div>
+          <h2 style="margin-bottom: 6px;">Add Product Directly</h2>
+          <p class="note">Products added here go straight to the public catalog with category support.</p>
+        </div>
+        <button type="button" class="btn-secondary" id="logoutBtn">Logout</button>
+      </div>
+
+      <form id="productForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" placeholder="Enter product name" required />
+          </div>
+
+          <div class="field">
+            <label for="category">Category</label>
+            <input type="text" id="category" placeholder="Electronics / Supermarket / Fresh Food" required />
+          </div>
+
+          <div class="field">
+            <label for="barcode">Barcode</label>
+            <input type="text" id="barcode" placeholder="Enter barcode" required />
+          </div>
+
+          <div class="field">
+            <label for="image">Image URL</label>
+            <input type="url" id="image" placeholder="https://example.com/image.jpg" required />
+          </div>
+
+          <div class="field full">
+            <label for="link">Product Link</label>
+            <input type="url" id="link" placeholder="https://example.com/product" required />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="addBtn">Add Product</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="section-card">
+      <h2>Pending Suggestions</h2>
+      <div id="suggestionsList" class="suggestions-list">
+        <div class="empty-suggestion">No pending suggestions.</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h2>Approved Products</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Barcode</th>
+              <th>Views</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <tr>
+              <td colspan="4" class="empty-row">No products found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDz9DxN0mLSpn_6A-opMeIEAEG4cIDk8OQ",
+      authDomain: "productsandbarcode.firebaseapp.com",
+      projectId: "productsandbarcode",
+      storageBucket: "productsandbarcode.firebasestorage.app",
+      messagingSenderId: "809301561294",
+      appId: "1:809301561294:web:d61d4820d9961f84cba59f",
+      measurementId: "G-MG7V865BE6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    const addBtn = document.getElementById("addBtn");
+    const productForm = document.getElementById("productForm");
+    const productTableBody = document.getElementById("productTableBody");
+    const suggestionsList = document.getElementById("suggestionsList");
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text || "";
+      return div.innerHTML;
+    }
+
+    function renderProducts(products) {
+      if (!products.length) {
+        productTableBody.innerHTML = '<tr><td colspan="4" class="empty-row">No products found.</td></tr>';
+        return;
+      }
+
+      productTableBody.innerHTML = products.map(function(product) {
+        return `
+          <tr>
+            <td>${escapeHtml(product.name)}</td>
+            <td>${escapeHtml(product.category || "Other")}</td>
+            <td>${escapeHtml(product.barcode)}</td>
+            <td>${Number(product.views || 0)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderSuggestions(suggestions) {
+      if (!suggestions.length) {
+        suggestionsList.innerHTML = '<div class="empty-suggestion">No pending suggestions.</div>';
+        return;
+      }
+
+      suggestionsList.innerHTML = suggestions.map(function(item) {
+        return `
+          <div class="suggestion-card">
+            <div class="suggestion-content">
+              <h3>${escapeHtml(item.name)}</h3>
+              <p><strong>Category:</strong> ${escapeHtml(item.category || "Other")}</p>
+              <p><strong>Barcode:</strong> ${escapeHtml(item.barcode)}</p>
+              <p><strong>Image:</strong> <a href="${escapeHtml(item.image)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.image)}</a></p>
+              <p><strong>Link:</strong> <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.link)}</a></p>
+              <p><strong>Message:</strong> ${escapeHtml(item.message || "No message")}</p>
+            </div>
+            <div class="suggestion-actions">
+              <button class="btn-primary" onclick="approveSuggestion('${item.id}')">Approve</button>
+              <button class="btn-secondary" onclick="rejectSuggestion('${item.id}')">Reject</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function loadProducts() {
+      db.collection("products").orderBy("name").onSnapshot(function(snapshot) {
+        const products = snapshot.docs.map(function(doc) {
+          return { id: doc.id, ...doc.data() };
+        });
+        renderProducts(products);
+      });
+    }
+
+    function loadSuggestions() {
+      db.collection("product_suggestions")
+        .where("status", "==", "pending")
+        .onSnapshot(function(snapshot) {
+          const suggestions = snapshot.docs.map(function(doc) {
+            return { id: doc.id, ...doc.data() };
+          });
+          renderSuggestions(suggestions);
+        });
+    }
+
+    window.approveSuggestion = async function(id) {
+      try {
+        const docRef = db.collection("product_suggestions").doc(id);
+        const docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+          alert("Suggestion not found");
+          return;
+        }
+
+        const data = docSnap.data();
+
+        await db.collection("products").add({
+          name: data.name,
+          category: data.category || "Other",
+          image: data.image,
+          barcode: data.barcode,
+          link: data.link,
+          views: 0
+        });
+
+        await docRef.update({
+          status: "approved",
+          approvedAt: new Date().toISOString(),
+          approvedBy: auth.currentUser ? auth.currentUser.email : ""
+        });
+
+        alert("Suggestion approved and product added");
+      } catch (error) {
+        console.error(error);
+        alert("Failed to approve suggestion");
+      }
+    };
+
+    window.rejectSuggestion = async function(id) {
+      try {
+        await db.collection("product_suggestions").doc(id).update({
+          status: "rejected",
+          rejectedAt: new Date().toISOString(),
+          rejectedBy: auth.currentUser ? auth.currentUser.email : ""
+        });
+
+        alert("Suggestion rejected");
+      } catch (error) {
+        console.error(error);
+        alert("Failed to reject suggestion");
+      }
+    };
+
+    auth.onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      loadProducts();
+      loadSuggestions();
+    });
+
+    logoutBtn.addEventListener("click", async function() {
+      await auth.signOut();
+      window.location.href = "login.html";
+    });
+
+    productForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const category = document.getElementById("category").value.trim();
+      const image = document.getElementById("image").value.trim();
+      const barcode = document.getElementById("barcode").value.trim();
+      const link = document.getElementById("link").value.trim();
+
+      if (!name || !category || !image || !barcode || !link) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      addBtn.disabled = true;
+      addBtn.textContent = "Adding...";
+
+      try {
+        await db.collection("products").add({
+          name: name,
+          category: category,
+          image: image,
+          barcode: barcode,
+          link: link,
+          views: 0
+        });
+
+        alert("Product added");
+        productForm.reset();
+      } catch (error) {
+        console.error(error);
+        alert("Failed to add product");
+      } finally {
+        addBtn.disabled = false;
+        addBtn.textContent = "Add Product";
+      }
+    });
+  </script>
+</body>
+</html>

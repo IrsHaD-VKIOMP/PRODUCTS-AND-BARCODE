@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products And Barcode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="scene-3d" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-floor"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="brand-bar">
+      <div class="brand">Products <span>&</span> Barcode</div>
+      <div class="top-actions">
+        <a href="products.html" class="btn-secondary">Browse Products</a>
+        <a href="admin.html" class="btn-primary">Admin / Suggest</a>
+      </div>
+    </div>
+
+    <div class="nav-wrap">
+      <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="products.html">Products</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="about.html">About</a>
+        <a href="admin.html">Admin / Suggest</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="premium-hero reveal">
+      <div class="premium-copy">
+        <span class="hero-badge">Smart Product Discovery</span>
+        <h1>Search products by barcode with a premium catalog experience</h1>
+        <p>
+          Discover supermarket items, electronics, household goods, and trending offers with a sleek product showcase designed for trust, speed, and conversion.
+        </p>
+
+        <div class="hero-actions">
+          <a href="products.html" class="btn-primary">Explore Catalog</a>
+          <a href="suggest.html" class="btn-link">Suggest Product</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <strong id="productsReady">0</strong>
+            <span>Products Ready</span>
+          </div>
+          <div class="stat-card">
+            <strong id="barcodesIndexed">0</strong>
+            <span>Barcodes Indexed</span>
+          </div>
+          <div class="stat-card">
+            <strong id="catalogCategories">0</strong>
+            <span>Catalog Categories</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="premium-visual reveal-delay">
+        <div class="floating-device">
+          <div class="device-glow"></div>
+          <div class="device-frame">
+            <div class="device-top">
+              <span class="device-dot"></span>
+              <span class="device-dot"></span>
+              <span class="device-dot"></span>
+            </div>
+
+            <div class="device-body">
+              <div class="scan-line"></div>
+
+              <div class="mini-product-card card-a">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Oreo-Two-Cookies.png" alt="Oreo Biscuit">
+                <div>
+                  <h4>Oreo Biscuit</h4>
+                  <p>Barcode ready product</p>
+                </div>
+              </div>
+
+              <div class="mini-product-card card-b">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Coca-Cola_can_2015.png" alt="Coca Cola">
+                <div>
+                  <h4>Coca Cola</h4>
+                  <p>Fast product match</p>
+                </div>
+              </div>
+
+              <div class="mini-product-card card-c">
+                <img src="https://city-png.b-cdn.net/thumbnail/thumbnail_public/uploads/preview/hd-cold-coca-cola-can-fresh-drink-transparent-png-701751712673616efwq0p8zpv.png?v=2026032512" alt="Featured Product">
+                <div>
+                  <h4>Featured Product</h4>
+                  <p>Catalog listing preview</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-strip reveal">
+      <div class="section-heading">
+        <span>Featured Catalogs</span>
+        <h2>Built for real product discovery</h2>
+      </div>
+
+      <div class="catalog-grid">
+        <article class="catalog-card">
+          <div class="catalog-icon">01</div>
+          <h3>Supermarket</h3>
+          <p>Snacks, drinks, pantry items, and everyday consumer goods with barcode-based references.</p>
+        </article>
+
+        <article class="catalog-card">
+          <div class="catalog-icon">02</div>
+          <h3>Electronics</h3>
+          <p>Smart devices, accessories, and gadgets presented with a clean modern storefront feel.</p>
+        </article>
+
+        <article class="catalog-card">
+          <div class="catalog-icon">03</div>
+          <h3>Home Goods</h3>
+          <p>Useful home products, packaged items, and practical catalog listings for buyers.</p>
+        </article>
+
+        <article class="catalog-card">
+          <div class="catalog-icon">04</div>
+          <h3>Affiliate Offers</h3>
+          <p>Structured buying links designed to support monetization while keeping the experience premium.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="showcase-section reveal">
+      <div class="section-heading">
+        <span>Catalog Preview</span>
+        <h2>More realistic product presentation</h2>
+      </div>
+
+      <div class="showcase-grid">
+        <article class="showcase-card tall-card">
+          <div class="showcase-image">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Oreo-Two-Cookies.png" alt="Oreo Biscuit">
+          </div>
+          <div class="showcase-content">
+            <span class="tag">Food & Grocery</span>
+            <h3>Oreo Biscuit</h3>
+            <p>Classic branded product displayed with stronger visual presentation and cleaner layout.</p>
+            <a href="products.html" class="btn-link">View Catalog</a>
+          </div>
+        </article>
+
+        <article class="showcase-card">
+          <div class="showcase-image">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Coca-Cola_can_2015.png" alt="Coca Cola">
+          </div>
+          <div class="showcase-content">
+            <span class="tag">Beverages</span>
+            <h3>Coca Cola</h3>
+            <p>Instantly recognizable products look more premium when arranged as a modern grid.</p>
+          </div>
+        </article>
+
+        <article class="showcase-card">
+          <div class="showcase-image">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Nest_Mini_%282nd_Gen%29.jpg/512px-Google_Nest_Mini_%282nd_Gen%29.jpg" alt="Smart Device">
+          </div>
+          <div class="showcase-content">
+            <span class="tag">Electronics</span>
+            <h3>Smart Device</h3>
+            <p>Blend household and tech catalogs so the site feels bigger and more commercial.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-box">&copy; 2026 ProductsAndBarcode. All rights reserved.</div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDz9DxN0mLSpn_6A-opMeIEAEG4cIDk8OQ",
+      authDomain: "productsandbarcode.firebaseapp.com",
+      projectId: "productsandbarcode",
+      storageBucket: "productsandbarcode.firebasestorage.app",
+      messagingSenderId: "809301561294",
+      appId: "1:809301561294:web:d61d4820d9961f84cba59f",
+      measurementId: "G-MG7V865BE6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const revealItems = document.querySelectorAll(".reveal, .reveal-delay");
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.18 });
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+
+    function animateValue(element, endValue) {
+      const duration = 1200;
+      const startTime = performance.now();
+
+      function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const currentValue = Math.floor(progress * endValue);
+        element.textContent = currentValue.toLocaleString();
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    db.collection("products").onSnapshot(function(snapshot) {
+      const products = snapshot.docs.map(function(doc) {
+        return doc.data();
+      });
+
+      const productTotal = products.length;
+      const barcodeTotal = products.filter(function(product) {
+        return product.barcode && String(product.barcode).trim() !== "";
+      }).length;
+
+      const categories = new Set(
+        products
+          .map(function(product) {
+            return (product.category || "").trim();
+          })
+          .filter(function(category) {
+            return category !== "";
+          })
+      );
+
+      animateValue(document.getElementById("productsReady"), productTotal);
+      animateValue(document.getElementById("barcodesIndexed"), barcodeTotal);
+      animateValue(document.getElementById("catalogCategories"), categories.size);
+    });
+  </script>
+</body>
+</html>
