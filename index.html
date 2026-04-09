@@ -48,21 +48,6 @@
           <a href="products.html" class="btn-primary">Explore Catalog</a>
           <a href="suggest.html" class="btn-link">Suggest Product</a>
         </div>
-
-        <div class="hero-stats">
-          <div class="stat-card">
-            <strong id="productsReady">0</strong>
-            <span>Products Ready</span>
-          </div>
-          <div class="stat-card">
-            <strong id="barcodesIndexed">0</strong>
-            <span>Barcodes Indexed</span>
-          </div>
-          <div class="stat-card">
-            <strong id="catalogCategories">0</strong>
-            <span>Catalog Categories</span>
-          </div>
-        </div>
       </div>
 
       <div class="premium-visual reveal-delay">
@@ -188,87 +173,18 @@
     <div class="footer-box">&copy; 2026 ProductsAndBarcode. All rights reserved.</div>
   </footer>
 
- <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const revealItems = document.querySelectorAll(".reveal, .reveal-delay");
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDz9DxN0mLSpn_6A-opMeIEAEG4cIDk8OQ",
-    authDomain: "productsandbarcode.firebaseapp.com",
-    projectId: "productsandbarcode",
-    storageBucket: "productsandbarcode.firebasestorage.app",
-    messagingSenderId: "809301561294",
-    appId: "1:809301561294:web:d61d4820d9961f84cba59f",
-    measurementId: "G-MG7V865BE6"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  const revealItems = document.querySelectorAll(".reveal, .reveal-delay");
-
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-      }
-    });
-  }, { threshold: 0.18 });
-
-  revealItems.forEach((item) => revealObserver.observe(item));
-
-  function animateValue(element, endValue) {
-    if (!element) return;
-
-    const duration = 1200;
-    const startTime = performance.now();
-
-    function update(now) {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const currentValue = Math.floor(progress * endValue);
-      element.textContent = currentValue.toLocaleString();
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      }
-    }
-
-    requestAnimationFrame(update);
-  }
-
-  db.collection("products").get()
-    .then(function(snapshot) {
-      const products = snapshot.docs.map(function(doc) {
-        return doc.data();
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
       });
+    }, { threshold: 0.18 });
 
-      const productTotal = products.length;
-      const barcodeTotal = products.filter(function(product) {
-        return product.barcode && String(product.barcode).trim() !== "";
-      }).length;
-
-      const categories = new Set(
-        products
-          .map(function(product) {
-            return (product.category || "").trim();
-          })
-          .filter(function(category) {
-            return category !== "";
-          })
-      );
-
-      animateValue(document.getElementById("productsReady"), productTotal);
-      animateValue(document.getElementById("barcodesIndexed"), barcodeTotal);
-      animateValue(document.getElementById("catalogCategories"), categories.size);
-
-      console.log("Products loaded:", productTotal);
-      console.log("Barcodes indexed:", barcodeTotal);
-      console.log("Catalog categories:", categories.size);
-    })
-    .catch(function(error) {
-      console.error("Firestore error:", error);
-      alert("Firestore error: " + error.message);
-    });
-</script>
+    revealItems.forEach((item) => revealObserver.observe(item));
+  </script>
 </body>
 </html>
